@@ -48,7 +48,7 @@ public class Skeleton {
 		}
 	}
 	
-	public byte[] getAndRemoteNextTask(byte[][] args) {
+	public byte[] getAndRemoveNextTask(byte[][] args) {
 		unmarshal(args);
 		Task task = tasks.getAndRemoveNextTask();
 		return marshall(task);

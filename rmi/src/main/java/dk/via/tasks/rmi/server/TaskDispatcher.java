@@ -20,10 +20,10 @@ public class TaskDispatcher implements Recipient {
 			return skeleton.add(args);
 		}
 		case "getAndRemoveNextTask": {
-			return skeleton.add(args);
+			return skeleton.getAndRemoveNextTask(args);
 		}
 		case "size": {
-			return skeleton.add(args);
+			return skeleton.size(args);
 		}
 		default:
 			return ByteConverter.toByteArray(new IllegalArgumentException("Invalid method"));	
