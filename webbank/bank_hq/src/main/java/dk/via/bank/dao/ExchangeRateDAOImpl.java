@@ -4,6 +4,7 @@ import dk.via.bank.ExchangeRateDAO;
 import dk.via.bank.dao.exception.NotFound;
 import dk.via.bank.dto.ExchangeRate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
@@ -11,6 +12,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Component
+@Scope("singleton")
 public class ExchangeRateDAOImpl implements ExchangeRateDAO {
 	private final ExchangeRateMapper mapper;
 	private final DatabaseHelper<ExchangeRate> helper;

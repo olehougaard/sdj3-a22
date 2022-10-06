@@ -1,8 +1,6 @@
 package dk.via.bank;
 
-import javax.xml.ws.Endpoint;
 import java.net.URI;
-import java.net.URL;
 import java.rmi.Remote;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;

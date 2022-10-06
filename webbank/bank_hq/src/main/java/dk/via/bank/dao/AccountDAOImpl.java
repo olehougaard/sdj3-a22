@@ -10,6 +10,7 @@ import dk.via.bank.dto.AccountNumber;
 import dk.via.bank.dto.Money;
 import dk.via.bank.dto.parameters.AccountSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -18,6 +19,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Component
+@Scope("singleton")
 public class AccountDAOImpl implements AccountDAO {
 	private final DatabaseHelper<Account> helper;
 

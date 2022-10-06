@@ -101,6 +101,7 @@ public class HqClient {
         CollectionModel<TransactionSpecification> ts = traverson
                 .follow("$._links.transactions.href")
                 .toObject(new TypeReferences.CollectionModelType<TransactionSpecification>() {});
-        return Objects.requireNonNull(ts).getContent();
+        assert ts != null;
+        return ts.getContent();
     }
 }

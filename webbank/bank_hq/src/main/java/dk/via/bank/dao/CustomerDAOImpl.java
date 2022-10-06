@@ -5,6 +5,7 @@ import dk.via.bank.dao.exception.Conflict;
 import dk.via.bank.dao.exception.NotFound;
 import dk.via.bank.dto.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -12,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Component
+@Scope("singleton")
 public class CustomerDAOImpl implements CustomerDAO {
 	private final DatabaseHelper<Customer> helper;
 

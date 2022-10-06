@@ -9,6 +9,7 @@ import dk.via.bank.dto.Money;
 import dk.via.bank.dto.parameters.TransactionSpecification;
 import dk.via.bank.dto.transaction.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
@@ -16,6 +17,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Component
+@Scope("singleton")
 public class TransactionDAOImpl implements TransactionDAO {
 	private static final String DEPOSIT = "Deposit";
 	private static final String TRANSFER = "Transfer";
@@ -30,11 +32,9 @@ public class TransactionDAOImpl implements TransactionDAO {
 	}
 	
 	private class TransactionMapper implements DataMapper<AbstractTransaction> {
-		private final String cpr;
 		private final AccountNumber accountNumber;
 
-		public TransactionMapper(String cpr, AccountNumber accountNumber) {
-			this.cpr = cpr;
+		public TransactionMapper(AccountNumber accountNumber) {
 			this.accountNumber = accountNumber;
 		}
 
@@ -126,12 +126,12 @@ public class TransactionDAOImpl implements TransactionDAO {
 	}
 
 	private AbstractTransaction getTransaction(String cpr, AccountNumber accountNumber, int transactionId) {
-		return helper.mapSingle(new TransactionMapper(cpr, accountNumber), "SELECT * FROM Transaction WHERE transaction_id = ?", transactionId);
+		return helper.mapSingle(new TransactionMapper(accountNumber), "SELECT * FROM Transaction WHERE transaction_id = ?", transactionId);
 	}
 
 	@Override
 	public List<AbstractTransaction> readTransactionsFor(String cpr, AccountNumber accountNumber) {
-		return helper.map(new TransactionMapper(cpr, accountNumber),
+		return helper.map(new TransactionMapper(accountNumber),
 				"SELECT * FROM Transaction WHERE (primary_reg_number = ? AND primary_account_number = ?) OR (secondary_reg_number = ? AND secondary_account_number = ?)",
 				accountNumber.getRegNumber(), accountNumber.getAccountNumber(),accountNumber.getRegNumber(), accountNumber.getAccountNumber());
 	}
