@@ -11,13 +11,9 @@ import java.util.List;
 import org.postgresql.Driver;
 
 public class DatabaseHelper<T> {
-	public static final String JDBC_URL = "jdbc:postgresql://localhost:5432/postgres?currentSchema=bank";
-	public static final String USERNAME = "postgres";
-	public static final String PASSWORD = "password";
-
-	private String jdbcURL;
-	private String username;
-	private String password;
+	private final String jdbcURL;
+	private final String username;
+	private final String password;
 
 
 	public DatabaseHelper(String jdbcURL, String username, String password) {
@@ -60,6 +56,7 @@ public class DatabaseHelper<T> {
 		return stat.executeQuery();
 	}
 	
+	@SuppressWarnings("UnusedReturnValue")
 	public int executeUpdate(String sql, Object... parameters) {
 		try (Connection connection = getConnection()) {
 			PreparedStatement stat = prepare(connection, sql, parameters);
