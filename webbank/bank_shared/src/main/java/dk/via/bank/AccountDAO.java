@@ -8,15 +8,15 @@ import java.util.Collection;
 import java.util.List;
 
 public interface AccountDAO {
-    Account createAccount(String cpr, AccountSpecification specification);
+    Account createAccount(AccountSpecification specification);
 
     List<Account> readAccountsFor(String cpr);
 
-    Account readAccount(String cpr, AccountNumber accountNumber);
+    Account readAccount(AccountNumber accountNumber);
 
     Account getAccount(AccountNumber accountNumber);
 
-    void updateAccount(String cpr, AccountNumber accountNumber, Account account);
+    void updateAccount(AccountNumber accountNumber, Account account);
 
-    void deleteAccount(String cpr, AccountNumber accountNumber);
+    void deleteAccount(AccountNumber accountNumber);
 }

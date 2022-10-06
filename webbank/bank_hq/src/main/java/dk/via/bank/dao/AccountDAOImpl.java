@@ -27,9 +27,10 @@ public class AccountDAOImpl implements AccountDAO {
 		this.helper = helper;
 	}
 
-	public Account createAccount(String cpr, AccountSpecification specification) {
+	public Account createAccount(AccountSpecification specification) {
 		int regNumber = specification.getRegNumber();
 		String currency = specification.getCurrency();
+		String cpr = specification.getCpr();
 		final List<Integer> keys = helper.executeUpdateWithGeneratedKeys("INSERT INTO Account(reg_number, customer, currency) VALUES (?, ?, ?)",
 				regNumber, cpr, currency);
 		return getAccount(new AccountNumber(regNumber, keys.get(0)));
@@ -51,7 +52,7 @@ public class AccountDAOImpl implements AccountDAO {
 		return helper.map(new AccountMapper(), "SELECT * FROM Account WHERE customer = ? AND active", cpr) ;
 	}
 
-    public Account readAccount(String cpr, AccountNumber accountNumber) {
+    public Account readAccount(AccountNumber accountNumber) {
 		Account account = getAccount(accountNumber);
 		if (account == null) {
 			throw new NotFound();
@@ -66,7 +67,7 @@ public class AccountDAOImpl implements AccountDAO {
 				accountNumber.getRegNumber(), accountNumber.getAccountNumber());
 	}
 
-    public void updateAccount(String cpr, AccountNumber accountNumber, Account account) {
+    public void updateAccount(AccountNumber accountNumber, Account account) {
 		if (account.getAccountNumber() != null && !account.getAccountNumber().equals(accountNumber)) {
 			throw new Conflict();
 		}
@@ -80,9 +81,9 @@ public class AccountDAOImpl implements AccountDAO {
 				account.getBalance().getAmount(), account.getSettledCurrency(), accountNumber.getRegNumber(), accountNumber.getAccountNumber());
 	}
 
-    public void deleteAccount(String cpr, AccountNumber accountNumber) {
+    public void deleteAccount(AccountNumber accountNumber) {
 		helper.executeUpdate(
-				"UPDATE ACCOUNT SET active = FALSE WHERE reg_number = ? AND account_number = ? AND customer = ?",
-				accountNumber.getRegNumber(), accountNumber.getAccountNumber(), cpr);
+				"UPDATE ACCOUNT SET active = FALSE WHERE reg_number = ? AND account_number = ?",
+				accountNumber.getRegNumber(), accountNumber.getAccountNumber());
 	}
 }

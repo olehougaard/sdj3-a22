@@ -16,7 +16,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/customers/{cpr}/accounts")
+@RequestMapping("/accounts")
 public class AccountController {
 	private final AccountDAO dao;
 
@@ -28,8 +28,8 @@ public class AccountController {
 		String accountString = account.getAccountNumber().toString();
 		String cpr = account.getCustomerCpr();
 		return EntityModel.of(account,
-			linkTo(methodOn(getClass()).readAccount(cpr, accountString)).withSelfRel(),
-			linkTo(methodOn(TransactionController.class).readTransactionsFor(cpr, accountString)).withRel("transactions"));
+			linkTo(methodOn(getClass()).readAccount(accountString)).withSelfRel(),
+			linkTo(methodOn(TransactionController.class).readTransactionsFor(accountString)).withRel("transactions"));
 	}
 
 	private CollectionModel<EntityModel<Account>> createCollection(String cpr, List<Account> accounts) {
@@ -38,28 +38,28 @@ public class AccountController {
 	}
 
 	@PostMapping
-	public EntityModel<Account> createAccount(@PathVariable("cpr") String cpr, @RequestBody AccountSpecification specification) {
-		return createEntity(dao.createAccount(cpr, specification));
+	public EntityModel<Account> createAccount(@RequestBody AccountSpecification specification) {
+		return createEntity(dao.createAccount(specification));
 	}
 
 	@GetMapping
-    public CollectionModel<EntityModel<Account>> readAccountsFor(@PathVariable("cpr") String cpr) {
+    public CollectionModel<EntityModel<Account>> readAccountsFor(@RequestParam("cpr") String cpr) {
 		return createCollection(cpr, dao.readAccountsFor(cpr));
 	}
 
 	@GetMapping("/{accountNumber}")
-    public EntityModel<Account> readAccount(@PathVariable("cpr") String cpr, @PathVariable("accountNumber") String accountString) {
-		return createEntity(dao.readAccount(cpr, AccountNumber.fromString(accountString)));
+    public EntityModel<Account> readAccount(@PathVariable("accountNumber") String accountString) {
+		return createEntity(dao.readAccount(AccountNumber.fromString(accountString)));
 	}
 
 	@PutMapping("/{accountNumber}")
-    public void updateAccount(@PathVariable("cpr") String cpr, @PathVariable("accountNumber") String accountString, @RequestBody Account account) {
-    	dao.updateAccount(cpr, AccountNumber.fromString(accountString), account);
+    public void updateAccount(@PathVariable("accountNumber") String accountString, @RequestBody Account account) {
+    	dao.updateAccount(AccountNumber.fromString(accountString), account);
 	}
 
 	@DeleteMapping("/{accountNumber}")
-    public void deleteAccount(@PathVariable("cpr") String cpr, @PathVariable("accountNumber") String accountString) {
+    public void deleteAccount(@PathVariable("accountNumber") String accountString) {
 		AccountNumber accountNumber = AccountNumber.fromString(accountString);
-    	dao.deleteAccount(cpr, accountNumber);
+    	dao.deleteAccount(accountNumber);
 	}
 }

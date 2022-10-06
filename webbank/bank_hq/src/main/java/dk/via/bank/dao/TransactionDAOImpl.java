@@ -106,7 +106,7 @@ public class TransactionDAOImpl implements TransactionDAO {
 	private final TransactionCreator creator = new TransactionCreator();
 
 	@Override
-	public AbstractTransaction createTransaction(String cpr, AccountNumber accountNumber, TransactionSpecification transactionSpec) {
+	public AbstractTransaction createTransaction(AccountNumber accountNumber, TransactionSpecification transactionSpec) {
 		Account account = accounts.getAccount(accountNumber);
 		if (account == null) {
 			throw new NotFound();
@@ -117,20 +117,20 @@ public class TransactionDAOImpl implements TransactionDAO {
 	}
 
 	@Override
-	public AbstractTransaction readTransaction(String cpr, AccountNumber accountNumber, int transactionId) {
-		AbstractTransaction transaction = getTransaction(cpr, accountNumber, transactionId);
+	public AbstractTransaction readTransaction(AccountNumber accountNumber, int transactionId) {
+		AbstractTransaction transaction = getTransaction(accountNumber, transactionId);
 		if (transaction == null || !transaction.includes(accountNumber)) {
 			throw new NotFound();
 		}
 		return transaction;
 	}
 
-	private AbstractTransaction getTransaction(String cpr, AccountNumber accountNumber, int transactionId) {
+	private AbstractTransaction getTransaction(AccountNumber accountNumber, int transactionId) {
 		return helper.mapSingle(new TransactionMapper(accountNumber), "SELECT * FROM Transaction WHERE transaction_id = ?", transactionId);
 	}
 
 	@Override
-	public List<AbstractTransaction> readTransactionsFor(String cpr, AccountNumber accountNumber) {
+	public List<AbstractTransaction> readTransactionsFor(AccountNumber accountNumber) {
 		return helper.map(new TransactionMapper(accountNumber),
 				"SELECT * FROM Transaction WHERE (primary_reg_number = ? AND primary_account_number = ?) OR (secondary_reg_number = ? AND secondary_account_number = ?)",
 				accountNumber.getRegNumber(), accountNumber.getAccountNumber(),accountNumber.getRegNumber(), accountNumber.getAccountNumber());

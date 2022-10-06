@@ -15,12 +15,8 @@ import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.rmi.RemoteException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class HqClient {
     private final URI endpoint;
@@ -35,12 +31,12 @@ public class HqClient {
         return endpoint + "customers/" + cpr;
     }
 
-    private String accountURI(String cpr, AccountNumber accountNumber) {
-        return customerURI(cpr) + "/accounts/" + accountNumber;
+    private String accountURI(AccountNumber accountNumber) {
+        return endpoint + "accounts/" + accountNumber;
     }
 
     private String accountURI(Account account) {
-        return accountURI(account.getCustomerCpr(), account.getAccountNumber());
+        return accountURI(account.getAccountNumber());
     }
 
     public Customer createCustomer(String cpr, String name, String address) {
@@ -53,12 +49,12 @@ public class HqClient {
     }
 
     public Account createAccount(Customer customer, int regNumber, String currency) {
-        AccountSpecification account = new AccountSpecification(regNumber, currency);
-        return restTemplate.postForEntity(customerURI(customer.getCpr()) + "/accounts", account, Account.class).getBody();
+        AccountSpecification account = new AccountSpecification(regNumber, currency, customer.getCpr());
+        return restTemplate.postForEntity(endpoint + "accounts", account, Account.class).getBody();
     }
 
-    public Account getAccount(Customer customer, AccountNumber accountNumber) {
-        return restTemplate.getForObject(accountURI(customer.getCpr(), accountNumber), Account.class);
+    public Account getAccount(AccountNumber accountNumber) {
+        return restTemplate.getForObject(accountURI(accountNumber), Account.class);
     }
 
     public void cancelAccount(Account account) {
@@ -66,8 +62,14 @@ public class HqClient {
     }
 
     public List<Account> getAccounts(Customer customer) {
-        Account[] accounts = restTemplate.getForObject(customerURI(customer.getCpr()) + "/accounts", Account[].class);
-        return Arrays.asList(Objects.requireNonNull(accounts));
+        UriBuilder builder = UriComponentsBuilder.fromUri(endpoint);
+        builder.path("accounts");
+        builder.queryParam("cpr", customer.getCpr());
+        Traverson traverson = new Traverson(builder.build(), MediaTypes.HAL_JSON);
+        CollectionModel<Account> exchangeRates = traverson.follow()
+                .toObject(new TypeReferences.CollectionModelType<Account>() {});
+        Collection<Account> accounts = Objects.requireNonNull(exchangeRates).getContent();
+        return new ArrayList<>(accounts);
     }
 
     public void updateAccount(Account account) {
@@ -91,12 +93,10 @@ public class HqClient {
         return rates.iterator().next();
     }
 
-    public Collection<TransactionSpecification> getTransactionsFor(Account acc) {
+    public Collection<TransactionSpecification> getTransactionsFor(Account account) {
         URI baseUri = endpoint
-                .resolve("customers/")
-                .resolve(acc.getCustomerCpr() + "/")
                 .resolve("accounts/")
-                .resolve(acc.getAccountNumber().toString());
+                .resolve(account.getAccountNumber().toString());
         Traverson traverson = new Traverson(baseUri, MediaTypes.HAL_JSON);
         CollectionModel<TransactionSpecification> ts = traverson
                 .follow("$._links.transactions.href")
