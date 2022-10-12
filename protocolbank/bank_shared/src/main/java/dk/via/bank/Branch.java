@@ -15,7 +15,7 @@ public interface Branch {
 	Customer createCustomer(String cpr, String name, String address);
 	Customer getCustomer(String cpr);
 	Account createAccount(Customer customer, String currency);
-	Account getAccount(Customer customer, AccountNumber accountNumber);
+	Account getAccount(AccountNumber accountNumber);
 	void cancelAccount(Account account);
 	Collection<Account> getAccounts(Customer customer);
 	void execute(AbstractTransaction t);

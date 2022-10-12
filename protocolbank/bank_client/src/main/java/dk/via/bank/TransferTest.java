@@ -47,11 +47,11 @@ public class TransferTest {
 		List<AbstractTransaction> primaryTransactionsBefore = branch.getTransactionsFor(primaryAccount);
 		List<AbstractTransaction> secondaryTransactionsBefore = branch.getTransactionsFor(secondaryAccount);
 		branch.execute(new DepositTransaction(-1, startingAmount, primaryAccount));
-		primaryAccount = branch.getAccount(customer, primaryAccount.getAccountNumber());
+		primaryAccount = branch.getAccount(primaryAccount.getAccountNumber());
 		assertEquals(startingAmount, primaryAccount.getBalance());
 		branch.execute(new TransferTransaction(-1, transferAmount, primaryAccount, secondaryAccount));
-		primaryAccount = branch.getAccount(customer, primaryAccount.getAccountNumber());
-		secondaryAccount = branch.getAccount(other, secondaryAccount.getAccountNumber());
+		primaryAccount = branch.getAccount(primaryAccount.getAccountNumber());
+		secondaryAccount = branch.getAccount(secondaryAccount.getAccountNumber());
 		assertEquals(remainingAmount, primaryAccount.getBalance());
 		assertEquals(branch.exchange(transferAmount, secondaryAccount.getSettledCurrency()), secondaryAccount.getBalance());
 		assertEquals(primaryTransactionsBefore.size() + 2, branch.getTransactionsFor(primaryAccount).size());

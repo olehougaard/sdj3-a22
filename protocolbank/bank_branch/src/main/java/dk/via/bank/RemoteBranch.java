@@ -34,7 +34,7 @@ public class RemoteBranch implements Branch {
 	}
 
 	@Override
-	public Account getAccount(Customer customer, AccountNumber accountNumber) {
+	public Account getAccount(AccountNumber accountNumber) {
 		return hqClient.getAccount(accountNumber);
 	}
 	

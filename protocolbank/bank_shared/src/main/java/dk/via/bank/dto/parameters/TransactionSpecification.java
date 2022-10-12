@@ -23,7 +23,6 @@ public class TransactionSpecification {
     }
 
     private TransactionSpecification(Integer id, String type, Money amount, String text, Account recipient) {
-        id.toString();
         this.id = id;
         this.type = type;
         this.amount = amount;
